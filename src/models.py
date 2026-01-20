@@ -12,6 +12,7 @@ class Staff:
 
 @dataclasses
 class Shift:
+    shiftPoints: 1
     shiftDate: date
     assignedStaff: Optional[Staff] = None # If no staff, this defaults to None
 
