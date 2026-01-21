@@ -9,6 +9,7 @@ class Staff:
     name: str
     points: int
     unavailDates: set[date]
+    biddingDates: set[date]
 
 @dataclasses
 class Shift:

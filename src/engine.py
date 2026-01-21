@@ -16,11 +16,23 @@ def assign_staff_to_shifts(staff_list, shifts):
             varName = f"s{s_idx}_{staff.name}"
             assignments[(staff.name, s_idx)] = model.NewBoolVar(varName)
 
+    # Hard Constraint: Each shift must hvae 1 staff assigned to it 
+    for s_idx, s in enumerate(shifts):
+        model.Add(sum(assignments[(staff.name, s_idx)]) == 1 for staff in staff_list)
+
+
     # Hard Constraint: Exclude staff from shifts on unavailable dates
     for s_idx, s in enumerate(shifts):
         for staff in staff_list:
             if s.shiftDate in staff.unavailDates:
                 model.Add(assignments[(staff.name, s_idx)] == 0)
+
+    # Hard Constraint: Assign shifts to staff who bidded for it
+    bidders = []
+    for s_idx, s in enumerate(shifts):
+        bidders = [staff for staff in staff_list if s.shiftDate in staff.biddingDates]
+        if bidders: # if there are bidders for the shift
+            model.Add(sum(assignments[(bidder.name, s_idx)]) == 1 for bidder in bidders)
 
     # Soft Constraint: Fairness
     # since 1 point represent 1 shift
